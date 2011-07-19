@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI Stratego</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script src="assets/javascript/game.js"></script>
+    <link href="assets/stylesheets/game.css" media="screen,projection" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <div id="wrapper">
+      <div id="error"></div>
+      <div id="message">Connecting to server...</div>
+
+      <div id="game">
+        <div id="board">
+
+        </div>
+      </div>
+
+      <div id="info">
+        <div id="start">
+          <input type="button" value="Start a new game">
+        </div>
+
+        <div id="player-status" class='playerstatus'>
+          <h3>You - <span class='pieces-taken'>#</span> pieces taken</h3>
+          <ul class='pieces-taken'>
+          </ul>
+        </div>
+
+        <div id="computer-status" class='playerstatus'>
+          <h3>Computer - <span class='pieces-taken'>#</span> pieces taken</h3>
+          <ul class='pieces-taken'>
+          </ul>
+        </div>
+
+      </div>
+
+
+      <script>
+        //<![CDATA[
+          Stratego.initialize();
+        //]]>
+      </script>
+    </div>
+  </body>
+</html>
