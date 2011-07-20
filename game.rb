@@ -1,5 +1,5 @@
 class GameSocket
-  ALLOWED_METHODS = [:newgame]
+  ALLOWED_METHODS = ["gamedata"]
 
   def initialize(socket, id)
     @socket = socket
@@ -8,9 +8,12 @@ class GameSocket
     socket.onmessage do |msg|
       puts "REC: #{msg}"
       response = JSON.parse(msg)
-      respond(:error, "Invalid request.")
 
-      self.send("#{response["action"]}", msg)
+      if ALLOWED_METHODS.include?(response["action"])
+        self.send("#{response["action"]}", response["data"])
+      else
+        respond(:error, "Invalid request.")
+      end
     end
   end
 
@@ -20,7 +23,11 @@ class GameSocket
   end
 
   # Actual game methods
-  def newgame
-
+  def gamedata(mode)
+    if data = GAME_DATA[mode.to_sym]
+      respond(:setup, data)
+    else
+      respond(:error, "Invalid game mode selected.")
+    end
   end
 end

@@ -4,6 +4,9 @@ require "em-websocket"
 require "json/ext"
 require "./game"
 
+GAME_DATA = {}
+Dir["./data/*.rb"].each {|f| require f}
+
 puts "Loaded server"
 
 unique_id = 1

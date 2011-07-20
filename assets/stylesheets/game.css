@@ -5,15 +5,10 @@ html {
 #wrapper {
   width: 960px;
   margin: 50px auto; }
-  #wrapper #game, #wrapper #info {
-    display: inline-block; }
-  #wrapper #game {
-    width: 670px;
-    margin-right: 15px; }
-  #wrapper #board {
+  #wrapper #board, #wrapper #info {
+    display: inline-block;
     margin-top: 5px;
-    width: 450px;
-    border: 1px solid black; }
+    vertical-align: top; }
   #wrapper #info {
     border: 1px solid black;
     width: 250px; }
@@ -26,3 +21,32 @@ html {
     border: 1px solid black;
     margin-bottom: 5px;
     display: none; }
+  #wrapper #player-status h3 {
+    color: red; }
+  #wrapper #computer-status h3 {
+    color: blue; }
+  #wrapper #board {
+    margin-right: 15px;
+    width: 670px; }
+    #wrapper #board table {
+      border-width: 0 0 1px 1px;
+      border-style: solid;
+      border-color: black; }
+      #wrapper #board table td {
+        border-width: 1px 1px 0 0;
+        border-style: solid;
+        border-color: black; }
+        #wrapper #board table td.piece {
+          background-color: #e6e6e6;
+          display: inline-block;
+          text-align: center;
+          vertical-align: middle;
+          line-height: 63px;
+          height: 63px;
+          width: 63px; }
+        #wrapper #board table td.blocked {
+          background-color: #0c7a26; }
+        #wrapper #board table td.red {
+          background-color: #a60202; }
+        #wrapper #board table td.blue {
+          background-color: #020da6; }

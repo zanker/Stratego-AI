@@ -6,17 +6,10 @@ html
   width: 960px
   margin: 50px auto
 
-  #game, #info
+  #board, #info
     display: inline-block
-
-  #game
-    width: 670px
-    margin-right: 15px
-
-  #board
     margin-top: 5px
-    width: 450px
-    border: 1px solid black
+    vertical-align: top
 
   #info
     border: 1px solid black
@@ -33,3 +26,42 @@ html
     border: 1px solid black
     margin-bottom: 5px
     display: none
+
+  #player-status
+    h3
+      color: red
+  #computer-status
+    h3
+      color: blue
+
+  #board
+    margin-right: 15px
+    width: 670px
+
+    table
+      border-width: 0 0 1px 1px
+      border-style: solid
+      border-color: black
+
+      td
+        border-width: 1px 1px 0 0
+        border-style: solid
+        border-color: black
+
+        &.piece
+          background-color: #E6E6E6
+          display: inline-block
+          text-align: center
+          vertical-align: middle
+          line-height: 63px
+          height: 63px
+          width: 63px
+
+        &.blocked
+          background-color: #0C7A26
+
+        &.red
+          background-color: #A60202
+        &.blue
+          background-color: #020DA6
+
