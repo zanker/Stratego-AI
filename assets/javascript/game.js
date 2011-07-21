@@ -106,8 +106,27 @@ var Stratego = {
       });
 
       $("#message").text("Setup phase, click on a piece and then another piece to do your initial setup. Click \"Play\" when ready.");
-      $("#start input").val("Play");
       $("#templates").show();
+
+      $("#start input").val("Play");
+      $("#start input").unbind("click").click(function() {
+        var setup = {};
+        $(".piece.red").each(function(id, row) {
+          row = $(row);
+          setup[row.closest(".spot").data("spot")] = row.data("rank");
+        });
+
+        Stratego.respond("start_game", setup);
+      });
+    },
+
+    // Time to go
+    start: function() {
+      $("#start").hide();
+      $("#templates").hide();
+
+      $("#message").text("Time to play. Your move, click a piece and then click again on the board to move.");
+      $(".playerstatus").show();
     }
   },
 

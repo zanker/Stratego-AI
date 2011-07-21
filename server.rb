@@ -1,6 +1,7 @@
 require "rubygems"
 require "eventmachine"
 require "em-websocket"
+require "redis"
 require "json/ext"
 require "./game"
 

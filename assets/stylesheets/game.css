@@ -18,15 +18,16 @@ html {
     display: none;
     color: red; }
   #wrapper .playerstatus {
-    border-top: 1px solid black;
     margin-bottom: 5px;
     display: none; }
     #wrapper .playerstatus h3 {
       margin-left: 2px; }
   #wrapper #player-status h3 {
     color: red; }
-  #wrapper #computer-status h3 {
-    color: blue; }
+  #wrapper #computer-status {
+    border-top: 1px solid black; }
+    #wrapper #computer-status h3 {
+      color: blue; }
   #wrapper #templates {
     text-align: center; }
     #wrapper #templates h3 {
