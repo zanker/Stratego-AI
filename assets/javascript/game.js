@@ -124,6 +124,7 @@ var Stratego = {
     start: function() {
       $("#start").hide();
       $("#templates").hide();
+      $("#board table .spot").unbind("click");
 
       $("#message").text("Time to play. Your move, click a piece and then click again on the board to move.");
       $(".playerstatus").show();
