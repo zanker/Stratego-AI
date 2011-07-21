@@ -5,7 +5,7 @@ html {
 #wrapper {
   width: 960px;
   margin: 50px auto; }
-  #wrapper #board, #wrapper #info {
+  #wrapper #board, #wrapper #info, #wrapper #templates {
     display: inline-block;
     margin-top: 5px;
     vertical-align: top; }
@@ -18,13 +18,20 @@ html {
     display: none;
     color: red; }
   #wrapper .playerstatus {
-    border: 1px solid black;
+    border-top: 1px solid black;
     margin-bottom: 5px;
     display: none; }
+    #wrapper .playerstatus h3 {
+      margin-left: 2px; }
   #wrapper #player-status h3 {
     color: red; }
   #wrapper #computer-status h3 {
     color: blue; }
+  #wrapper #templates {
+    text-align: center; }
+    #wrapper #templates h3 {
+      margin-left: 2px;
+      text-align: left; }
   #wrapper #board {
     margin-right: 15px;
     width: 670px; }
@@ -36,7 +43,34 @@ html {
         border-width: 1px 1px 0 0;
         border-style: solid;
         border-color: black; }
-        #wrapper #board table td.piece {
+        #wrapper #board table td .piece {
+          height: 65px;
+          width: 65px;
+          position: relative;
+          top: -64px;
+          left: -1px; }
+          #wrapper #board table td .piece .name, #wrapper #board table td .piece .rank {
+            color: white;
+            line-height: 100%;
+            font-weight: bold; }
+          #wrapper #board table td .piece .name {
+            padding-top: 4px; }
+          #wrapper #board table td .piece .rank {
+            font-size: 180%;
+            padding-top: 10px; }
+          #wrapper #board table td .piece.pointer {
+            cursor: pointer; }
+          #wrapper #board table td .piece.red {
+            background-color: #a60202; }
+          #wrapper #board table td .piece.red.highlight {
+            background-color: #c70202; }
+          #wrapper #board table td .piece.red:hover, #wrapper #board table td .piece.red.active {
+            background-color: #700000 !important; }
+          #wrapper #board table td .piece.blue {
+            background-color: #182fde; }
+          #wrapper #board table td .piece.blue:hover {
+            background-color: #000b9e; }
+        #wrapper #board table td.spot {
           background-color: #e6e6e6;
           display: inline-block;
           text-align: center;
@@ -44,9 +78,9 @@ html {
           line-height: 63px;
           height: 63px;
           width: 63px; }
+        #wrapper #board table td.spot:hover {
+          background-color: #a6a6a6; }
+        #wrapper #board table td.pointer {
+          cursor: pointer; }
         #wrapper #board table td.blocked {
-          background-color: #0c7a26; }
-        #wrapper #board table td.red {
-          background-color: #a60202; }
-        #wrapper #board table td.blue {
-          background-color: #020da6; }
+          background-color: #0c7a26 !important; }

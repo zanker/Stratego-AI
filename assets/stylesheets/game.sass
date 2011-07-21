@@ -6,7 +6,7 @@ html
   width: 960px
   margin: 50px auto
 
-  #board, #info
+  #board, #info, #templates
     display: inline-block
     margin-top: 5px
     vertical-align: top
@@ -23,9 +23,11 @@ html
     color: red
 
   .playerstatus
-    border: 1px solid black
+    border-top: 1px solid black
     margin-bottom: 5px
     display: none
+    h3
+      margin-left: 2px
 
   #player-status
     h3
@@ -33,6 +35,14 @@ html
   #computer-status
     h3
       color: blue
+
+  #templates
+    text-align: center
+
+    h3
+      margin-left: 2px
+      text-align: left
+
 
   #board
     margin-right: 15px
@@ -48,7 +58,40 @@ html
         border-style: solid
         border-color: black
 
-        &.piece
+        .piece
+          height: 65px
+          width: 65px
+          position: relative
+          top: -64px
+          left: -1px
+
+          .name, .rank
+            color: white
+            line-height: 100%
+            font-weight: bold
+
+          .name
+            padding-top: 4px
+          .rank
+            font-size: 180%
+            padding-top: 10px
+
+          &.pointer
+            cursor: pointer
+
+          &.red
+            background-color: #A60202
+          &.red.highlight
+            background-color: #A60202 * 1.20
+          &.red:hover, &.red.active
+            background-color: #700000 !important
+
+          &.blue
+            background-color: #182FDE
+          &.blue:hover
+            background-color: #000B9E
+
+        &.spot
           background-color: #E6E6E6
           display: inline-block
           text-align: center
@@ -57,11 +100,13 @@ html
           height: 63px
           width: 63px
 
-        &.blocked
-          background-color: #0C7A26
+        &.spot:hover
+          background-color: #A6A6A6
 
-        &.red
-          background-color: #A60202
-        &.blue
-          background-color: #020DA6
+        &.pointer
+          cursor: pointer
+
+        &.blocked
+          background-color: #0C7A26 !important
+
 
