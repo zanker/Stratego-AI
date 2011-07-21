@@ -35,7 +35,7 @@ var Stratego = {
 
       $("<table cellspacing='0'>" + html + "</table>").appendTo($("#board"));
 
-      // Static list of pieces that we add in so they can movie it
+      // Static list of the player pieces so we can quickly add them in a consistently organized way
       var pieces = [];
       for( var key in data.pieces ) {
         for( i=0; i < data.pieces[key].avail; i++ ) pieces.push(key);
@@ -68,7 +68,7 @@ var Stratego = {
             active_piece = null;
             player_pieces.removeClass("highlight");
 
-          // Next click we swap unless they reclick
+          // Next click we swap unless they reclick the same piece
           } else if( !active_piece ) {
             player_pieces.addClass("highlight");
             piece.removeClass("highlight").addClass("active");
