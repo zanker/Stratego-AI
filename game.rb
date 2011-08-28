@@ -1,5 +1,5 @@
 class GameSocket
-  ALLOWED_METHODS = ["gamedata", "start_game"]
+  ALLOWED_METHODS = ["gamedata", "start_game", "move"]
 
   def initialize(socket, id)
     @socket = socket
@@ -28,29 +28,38 @@ class GameSocket
     placement = {}
     temp.each {|k, v| placement[k.to_i] = (v.is_a?(Integer) && v || v.to_sym)}
 
-    # Double check the data to make sure nothing funky is going on
-    placement.delete_if {|spot, rank| spot < @game_data[:map][:red][:start] or spot > @game_data[:map][:red][:end]}
+    # Make sure they aren't placing pieces outside of the game board
+    # also make sure they haven't made up a rank
+    placement.delete_if {|spot, rank| spot < @game_data[:map][:red][:start] or spot > @game_data[:map][:red][:end] or !@game_data[:pieces][rank]}
     if placement.length != @game_data[:map][:red][:total]
-      respond(:error, "Invalid game data sent back.")
+      return respond(:error, "Invalid game data sent back.")
     end
 
+    # Make sure
     totals = placement.values
     @game_data[:pieces].each do |rank, data|
       if totals.count(rank) != data[:avail]
-        respond(:error, "Invalid game data sent back.")
-        return
+        return respond(:error, "Invalid game data sent back.")
       end
     end
 
-    # Save theres
+    @game[:move] = :red
     @game[:red] = placement
 
-    # Figure out ours
+    # For the time being, will copy the Cyclone Defense and then iprove it once the AI is in
+    @game[:blue] = {}
+    (@game_data[:map][:blue][:start]..@game_data[:map][:blue][:end]).each do |spot|
+      @game[:blue][spot] = @game_data[:templates][:cyclonedef][spot - 1]
+    end
 
-    respond(:start)
+    respond(:start, {:move => @game[:move]})
   end
 
   # Actual game methods
+  def move(data)
+
+  end
+
   def gamedata(mode)
     if data = GAME_DATA[mode.to_sym]
       @game_data = data
