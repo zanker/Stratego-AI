@@ -1,4 +1,68 @@
 var Stratego = {
+  status: {},
+
+  is_line_valid: function(spot_id, total, offset) {
+    // Check the entire line, if it's blocked or another one of our pieces is in it then it's invalid.
+    var total_enemies = 0, spot, i;
+    for( i=1; i <= total; i++ ) {
+      spot = Stratego.spot_map[spot_id + (i * offset)];
+      if( spot.hasClass("blocked") || spot.find(".piece." + Stratego.status.player).length == 1 ) return false;
+      if( spot.find(".piece." + Stratego.status.other_player).length == 1 ) total_enemies += 1;
+    }
+
+    // Anything more than an enemy in the line means it's also invalid
+    return ( total_enemies <= 1 );
+  },
+
+  is_move_valid: function(from, to) {
+    var from_rank = from.find(".piece").data("rank-id");
+    // Either it's blocked (terrain) or we have a piece on that area already
+    if( to.hasClass("blocked") || to.find(".piece." + Stratego.status.player).length == 1 ) return;
+
+    var from_spot = from.data("spot"), to_spot = to.data("spot");
+    var from_horz = this.horz_area(from_spot), to_horz = this.horz_area(to_spot);
+    var from_vert = this.vert_area(from_spot), to_vert = this.vert_area(to_spot);
+
+    // Scouts can move any distance in a straight line.
+    if( from_rank == "SC" ) {
+      // Moving up or down
+      var spot_id = from.data("spot");
+      if( from_horz == to_horz ) {
+        var offset = Stratego.game_data.map.height * (from_vert > to_vert ? -1 : 1);
+        return Stratego.is_line_valid(spot_id, Math.abs(from_vert - to_vert), offset);
+
+      // Moving left or right
+      } else if( from_vert == to_vert ) {
+        return Stratego.is_line_valid(spot_id, Math.abs(from_horz - to_horz), (from_horz > to_horz ? -1 : 1));
+
+      // Invalid otherwise
+      } else {
+        return false;
+      }
+    }
+
+    // Everyone else can only move one spot up/down or left/right
+    if( from_horz == to_horz ) {
+      return ( Math.abs(from_vert - to_vert) == 1 );
+    } else if( from_vert == to_vert ) {
+      return ( Math.abs(from_horz - to_horz) == 1 );
+    }
+
+    return false;
+  },
+
+  // Turn our spots into labels using chess labeling
+  letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+  vert_area: function(spot) {
+    return Math.floor((spot - 1) / Stratego.game_data.map.height);
+  },
+  horz_area: function(spot) {
+    return (spot - 1) % Stratego.game_data.map.width;
+  },
+  spot_to_label: function(spot) {
+    return this.letters[this.horz_area(spot)] + (Stratego.game_data.map.height - this.vert_area(spot));
+  },
+
   actions: {
     loaded: function() {
       $("#message").text("Ready to play, click \"Start a new game\" to begin game vs the computer.");
@@ -6,7 +70,13 @@ var Stratego = {
       $("#start input").attr("disabled", null);
       $("#start input").click(function() { Stratego.respond("gamedata", "classic"); });
 
+      // DEBUG
       $("#start input").click();
+      setTimeout(function() {
+        $("#templates input[data-template='cyclonedef']").click();
+
+        setTimeout(function() { $("#start input[type='button']").click(); }, 10);
+      }, 10);
     },
 
     error: function(data) {
@@ -16,15 +86,17 @@ var Stratego = {
     // Let the player choose locations
     setup: function(data) {
       Stratego.game_data = data;
+      Stratego.status.player = "red";
+      Stratego.status.other_player = "blue";
       Stratego.spot_map = {};
 
       // Load the game board
       var blocked = {};
       for( var i=0, total=data.map.blocked.length; i < total; i++ ) blocked[data.map.blocked[i]] = true;
 
-      var j, piece, html = "";
+      var spot, j, piece, html = "";
       for( i=0; i < data.map.height; i++ ) {
-        html += "<tr>"
+        html += "<tr>";
         for( j=1; j <= data.map.width; j++ ) {
           spot = (i * 10) + j;
           html += "<td class='spot" + (blocked[spot] ? " blocked" : "") + "' data-spot='" + spot + "' id='gamespot" + spot + "'>" + spot + "</td>";
@@ -51,27 +123,42 @@ var Stratego = {
           $("<div class='piece blue' id='gamepiece" + spot_id + "'></div>").appendTo(spot);
         } else if( spot_id >= data.map.red.start && spot_id <= data.map.red.end ) {
           var rank = pieces.shift();
-          $("<div class='piece red piece-" + rank + " pointer' data-rank='" + rank + "' id='gamepiece" + spot_id + "'><div class='name'>" + data.pieces[rank].name + "</div><div class='rank'>" + rank + "</div></div>").appendTo(spot);
+          $("<div class='piece red piece-" + rank + " pointer' data-rank='" + rank + "' data-rank-id='" + Stratego.game_data.pieces[rank].id + "' id='gamepiece" + spot_id + "'><div class='name'>" + data.pieces[rank].name + "</div><div class='rank'>" + rank + "</div></div>").appendTo(spot);
         }
       });
 
+      // Label horizontal, A - Z
+      html = "<ul>";
+      for( i=0; i < data.map.width; i++ ) {
+        html += "<li>" + Stratego.letters[i] + "</li>";
+      }
+
+      $(".horz-spots").html(html + "</ul>");
+
+      // Label vertical, 1 - X
+      html = "<ul>";
+      for( i=data.map.height; i > 0; i-- ) {
+        html += "<li>" + i + "</li>";
+      }
+
+      $(".vert-spots").html(html + "</ul>");
+
       // Initial setup hook, will kill this off later
-      var player_pieces = $("#board table .piece.red");
+      var player_pieces = $("#board table .piece." + Stratego.status.player);
       var active_piece;
       $("#board table .spot").click(function() {
         var target = $(this);
         var piece = target.find(".piece");
 
-        if( piece.hasClass("red") ) {
+        if( piece.hasClass(Stratego.status.player) ) {
           // Deselect
           if( active_piece == piece ) {
+            active_piece.removeClass("highlight");
             active_piece = null;
-            player_pieces.removeClass("highlight");
 
           // Next click we swap unless they reclick the same piece
           } else if( !active_piece ) {
-            player_pieces.addClass("highlight");
-            piece.removeClass("highlight").addClass("active");
+            piece.addClass("active");
 
             active_piece = piece;
 
@@ -81,18 +168,19 @@ var Stratego = {
             active_piece.detach().appendTo(target).removeClass("active");
 
             active_piece = null;
-            player_pieces.removeClass("highlight");
           }
         }
       });
 
       // For setting up with a predefined template
       $("#templates input[type='button']").click(function() {
+        player_pieces.removeClass("highlight");
+
         var template = data.templates[$(this).data("template")];
-        var spot_i = data.map.red.start;
+        var spot_i = data.map[Stratego.status.player].start;
 
         var pieces = {};
-        $(".piece.red").each(function(id, row) {
+        $(".piece." + Stratego.status.player).each(function(id, row) {
           if( pieces[row.getAttribute("data-rank")] == null ) pieces[row.getAttribute("data-rank")] = [];
           pieces[row.getAttribute("data-rank")].push(row);
         });
@@ -109,9 +197,9 @@ var Stratego = {
       $("#templates").show();
 
       $("#start input").val("Play");
-      $("#start input").unbind("click").click(function() {
+      $("#start input ").unbind("click").click(function() {
         var setup = {};
-        $(".piece.red").each(function(id, row) {
+        $(".piece." + Stratego.status.player).each(function(id, row) {
           row = $(row);
           setup[row.closest(".spot").data("spot")] = row.data("rank");
         });
@@ -121,13 +209,56 @@ var Stratego = {
     },
 
     // Time to go
-    start: function() {
+    start: function(data) {
+      Stratego.status.move = data.move;
+
       $("#start").hide();
       $("#templates").hide();
       $("#board table .spot").unbind("click");
 
-      $("#message").text("Time to play. Your move, click a piece and then click again on the board to move.");
-      $(".playerstatus").show();
+      $("#message").html("Time to play! Its <span class='" + data.move + "-player'>" + data.move + "s</span> move." + (data.move == Stratego.status.player ? " Click a piece and then a spot to move." : "AI's turn."));
+      $(".playerstatus, #history").show();
+
+      var active_spot;
+      $("#board table .spot").click(function() {
+        var spot = $(this), piece = $(this).find(".piece");
+        if( Stratego.status.move != Stratego.status.player ) return;
+
+        // Deselecting an existing spot
+        if( active_spot && active_spot.attr("id") == spot.attr("id") ) {
+          $("#board table td.pointer").removeClass("pointer");
+          piece.removeClass("active");
+          active_spot = null;
+
+        // We already selected a spot, so we need to make sure it's valid to move onto
+        } else if( active_spot ) {
+          if( !Stratego.is_move_valid(active_spot, spot) ) {
+            $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(active_spot.data("spot")) + " to " + Stratego.spot_to_label(spot.data("spot")) + "</span>");
+            return;
+          }
+
+          $("#board table td.pointer").removeClass("pointer");
+          if( spot.find(".piece." + Stratego.status.other_player).length == 1 ) {
+            $("#message").html("Moving from <span class='" + Stratego.status.player + "-player'>" + Stratego.spot_to_label(active_spot.data("spot")) + "</span> to <span class='" + Stratego.status.other_player + "-player'>" + Stratego.spot_to_label(spot.data("spot")) + "</span> and attacking");
+          } else {
+            $("#message").html("Moving from <span class='" + Stratego.status.player + "-player'>" + Stratego.spot_to_label(active_spot.data("spot")) + "</span> to " + Stratego.spot_to_label(spot.data("spot")));
+          }
+
+          Stratego.respond("move", {from: active_spot.data("spot"), to: spot.data("spot")});
+
+        // Nothing selected yet, only can select our spots
+        } else if( piece.find(Stratego.status.player) )  {
+          if( piece.data("rank-id") == "FL" || piece.data("rank-id") == "BO" ) {
+            $("#message").html("<span class='red'>You can only move that piece during setup.</span>");
+            return;
+          }
+
+          piece.addClass("active");
+          $("#board table td[class='spot']").addClass("pointer");
+          active_spot = spot;
+        }
+
+      });
     }
   },
 

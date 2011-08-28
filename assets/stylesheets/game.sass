@@ -1,52 +1,113 @@
+$red_piece: #A60202
+$blue_piece: #182FDE
+
 html
   font-size: 14px
   font-family: Helvetica, Arial, sans-serif
 
 #wrapper
-  width: 960px
+  width: 988px
   margin: 50px auto
 
-  #board, #info, #templates
-    display: inline-block
-    margin-top: 5px
-    vertical-align: top
+  h3
+    margin: 5px 0 5px 2px
 
-  #info
-    border: 1px solid black
-    width: 250px
-
-  #start
-    text-align: center
+  .notice
+    margin-left: 33px
 
   #error
     display: none
     color: red
+    font-weight: bold
+    margin-bottom: 5px
+
+  #message
+    border-bottom: 1px solid black
+    padding-bottom: 5px
+    margin-bottom: 15px
+    font-weight: bold
+
+    .red-player
+      color: $red_piece
+    .blue-player
+      color: $blue_piece
+    .red
+      color: red
+    .green
+      color: green
+
+  .vert-spots, .horz-spots
+    ul
+      list-style: none
+      display: inline-block
+      padding: 0px
+      font-weight: bold
+      font-size: 120%
+
+  .vert-spots
+    display: inline-block
+    ul
+      margin: 6px 10px 0 0
+      li
+        height: 65px
+        margin-bottom: 1px
+        vertical-align: middle
+        line-height: 65px
+
+  .horz-spots
+    margin-bottom: 5px
+    ul
+      margin: 0 0 0 33px
+      li
+        float: left
+        width: 65px
+        margin-right: 1px
+        text-align: center
+
+
+  .box
+    display: inline-block
+    margin-top: 5px
+    vertical-align: top
+    width: 100%
+
+  #rightside
+    width: 280px !important
+
+  #info, #history
+    border: 1px solid black
+    width: 280px
+
+  #start
+    text-align: center
 
   .playerstatus
     margin-bottom: 5px
     display: none
-    h3
-      margin-left: 2px
 
   #player-status
     h3
-      color: red
+      color: $red_piece
   #computer-status
     border-top: 1px solid black
 
     h3
-      color: blue
+      color: $blue_piece
 
   #templates
     text-align: center
 
-    h3
-      margin-left: 2px
-      text-align: left
+  #history
+    display: none
+    margin-top: 15px
 
+    #logs
+      overflow-y: scroll
+      overflow-x: hidden
+      max-height: 481px
+      margin: 0 0 5px 2px
 
   #board
-    margin-right: 15px
     width: 670px
 
     table
@@ -81,16 +142,16 @@ html
             cursor: pointer
 
           &.red
-            background-color: #A60202
-          &.red.highlight
-            background-color: #A60202 * 1.20
-          &.red:hover, &.red.active
-            background-color: #700000 !important
+            background-color: $red_piece
 
+            &.active
+              background-color: #570000 !important
+            &:hover
+              background-color: #700000
           &.blue
-            background-color: #182FDE
-          &.blue:hover
-            background-color: #000B9E
+            background-color: $blue_piece
+            &:hover
+              background-color: #000B9E
 
         &.spot
           background-color: #E6E6E6

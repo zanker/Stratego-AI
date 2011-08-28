@@ -9,37 +9,46 @@
 
   <body>
     <div id="wrapper">
-      <div id="error"></div>
-      <div id="message">Connecting to server...</div>
+      <div id="error" class="notice"></div>
+      <div id="message" class="notice">Connecting to server...</div>
 
-      <div id="board">
+      <div class="horz-spots"></div>
+      <div class="vert-spots"></div>
+      <div id="board" class="box">
+      </div>
+      <!--<div class="vert-spots"></div>-->
 
+      <div id="rightside" class="box">
+        <div id="info" class="box">
+          <div id="start">
+            <input type="button" value="Start a new game" disabled="disabled">
+          </div>
+
+          <div id="templates" class="box">
+            <h3>You can also select a starting setup:</h3>
+            <input type="button" value="Cyclone Defense" data-template="cyclonedef">
+          </div>
+
+          <div id="player-status" class='playerstatus'>
+            <h3>You - <span class='pieces-taken'>0</span> pieces taken</h3>
+            <ul class='pieces-taken'>
+            </ul>
+          </div>
+
+          <div id="computer-status" class='playerstatus'>
+            <h3>Computer - <span class='pieces-taken'>0</span> pieces taken</h3>
+            <ul class='pieces-taken'>
+            </ul>
+          </div>
+        </div>
+
+        <div id="history">
+          <h3>History</h3>
+          <div id="logs"></div>
+        </div>
       </div>
 
-      <div id="info">
-        <div id="start">
-          <input type="button" value="Start a new game" disabled="disabled">
-        </div>
-
-        <div id="templates">
-          <h3>You can also select a starting setup:</h3>
-          <input type="button" value="Cyclone Defense" data-template="cyclonedef">
-        </div>
-
-        <div id="player-status" class='playerstatus'>
-          <h3>You - <span class='pieces-taken'>0</span> pieces taken</h3>
-          <ul class='pieces-taken'>
-          </ul>
-        </div>
-
-        <div id="computer-status" class='playerstatus'>
-          <h3>Computer - <span class='pieces-taken'>0</span> pieces taken</h3>
-          <ul class='pieces-taken'>
-          </ul>
-        </div>
-
-      </div>
-
+      <!--<div class="horz-spots"></div>-->
 
       <script>
         //<![CDATA[

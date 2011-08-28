@@ -3,38 +3,86 @@ html {
   font-family: Helvetica, Arial, sans-serif; }
 
 #wrapper {
-  width: 960px;
+  width: 988px;
   margin: 50px auto; }
-  #wrapper #board, #wrapper #info, #wrapper #templates {
-    display: inline-block;
-    margin-top: 5px;
-    vertical-align: top; }
-  #wrapper #info {
-    border: 1px solid black;
-    width: 250px; }
-  #wrapper #start {
-    text-align: center; }
+  #wrapper h3 {
+    margin: 5px 0 5px 2px; }
+  #wrapper .notice {
+    margin-left: 33px; }
   #wrapper #error {
     display: none;
-    color: red; }
+    color: red;
+    font-weight: bold;
+    margin-bottom: 5px; }
+  #wrapper #message {
+    border-bottom: 1px solid black;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-weight: bold; }
+    #wrapper #message .red-player {
+      color: #a60202; }
+    #wrapper #message .blue-player {
+      color: #182fde; }
+    #wrapper #message .red {
+      color: red; }
+    #wrapper #message .green {
+      color: green; }
+  #wrapper .vert-spots ul, #wrapper .horz-spots ul {
+    list-style: none;
+    display: inline-block;
+    padding: 0px;
+    font-weight: bold;
+    font-size: 120%; }
+  #wrapper .vert-spots {
+    display: inline-block; }
+    #wrapper .vert-spots ul {
+      margin: 6px 10px 0 0; }
+      #wrapper .vert-spots ul li {
+        height: 65px;
+        margin-bottom: 1px;
+        vertical-align: middle;
+        line-height: 65px; }
+  #wrapper .horz-spots {
+    margin-bottom: 5px; }
+    #wrapper .horz-spots ul {
+      margin: 0 0 0 33px; }
+      #wrapper .horz-spots ul li {
+        float: left;
+        width: 65px;
+        margin-right: 1px;
+        text-align: center; }
+  #wrapper .box {
+    display: inline-block;
+    margin-top: 5px;
+    vertical-align: top;
+    width: 100%; }
+  #wrapper #rightside {
+    width: 280px !important; }
+  #wrapper #info, #wrapper #history {
+    border: 1px solid black;
+    width: 280px; }
+  #wrapper #start {
+    text-align: center; }
   #wrapper .playerstatus {
     margin-bottom: 5px;
     display: none; }
-    #wrapper .playerstatus h3 {
-      margin-left: 2px; }
   #wrapper #player-status h3 {
-    color: red; }
+    color: #a60202; }
   #wrapper #computer-status {
     border-top: 1px solid black; }
     #wrapper #computer-status h3 {
-      color: blue; }
+      color: #182fde; }
   #wrapper #templates {
     text-align: center; }
-    #wrapper #templates h3 {
-      margin-left: 2px;
-      text-align: left; }
+  #wrapper #history {
+    display: none;
+    margin-top: 15px; }
+    #wrapper #history #logs {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      max-height: 481px;
+      margin: 0 0 5px 2px; }
   #wrapper #board {
-    margin-right: 15px;
     width: 670px; }
     #wrapper #board table {
       border-width: 0 0 1px 1px;
@@ -63,14 +111,14 @@ html {
             cursor: pointer; }
           #wrapper #board table td .piece.red {
             background-color: #a60202; }
-          #wrapper #board table td .piece.red.highlight {
-            background-color: #c70202; }
-          #wrapper #board table td .piece.red:hover, #wrapper #board table td .piece.red.active {
-            background-color: #700000 !important; }
+            #wrapper #board table td .piece.red.active {
+              background-color: #570000 !important; }
+            #wrapper #board table td .piece.red:hover {
+              background-color: #700000; }
           #wrapper #board table td .piece.blue {
             background-color: #182fde; }
-          #wrapper #board table td .piece.blue:hover {
-            background-color: #000b9e; }
+            #wrapper #board table td .piece.blue:hover {
+              background-color: #000b9e; }
         #wrapper #board table td.spot {
           background-color: #e6e6e6;
           display: inline-block;
