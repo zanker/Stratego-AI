@@ -236,10 +236,10 @@ var Stratego = {
 
         // We already selected a spot, so we need to make sure it's valid to move onto
         } else if( active_spot ) {
-//          if( !Stratego.is_move_valid(active_spot, spot) ) {
-//            $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(active_spot.data("spot")) + " to " + Stratego.spot_to_label(spot.data("spot")) + "</span>");
-//            return;
-//          }
+          if( !Stratego.is_move_valid(active_spot, spot) ) {
+            $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(active_spot.data("spot")) + " to " + Stratego.spot_to_label(spot.data("spot")) + "</span>");
+            return;
+          }
 
           $("#board table td.pointer").removeClass("pointer");
           if( spot.find(".piece." + Stratego.status.other_player).length == 1 ) {
