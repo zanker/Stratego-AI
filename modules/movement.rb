@@ -46,7 +46,7 @@ class Movement
     to_horz, to_vert = spot_area(to)
 
     # Scout, can move any number of spots up/down/left/right
-    if piece[:id] == "SC"
+    if @game[@game[:move]][from] == :SC
       # We're moving up or down
       if from_horz == to_horz
         offset = @game_data[:map][:height] * (from_vert > to_vert ? -1 : 1)
