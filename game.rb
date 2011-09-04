@@ -57,10 +57,9 @@ class GameSocket
 
     respond(:start, {:move => @game[:move]})
 
-    @last_move = {}
-    @movement = Movement.new(@game, @game_data, @last_move)
-    @combat = Combat.new(@game, @game_data, @last_move)
-    @ai = ComputerAI.new(@game, @game_data, @last_move)
+    @movement = Movement.new(@game, @game_data)
+    @combat = Combat.new(@game, @game_data)
+    @ai = ComputerAI.new(@game, @game_data)
   end
 
   # Actual game methods

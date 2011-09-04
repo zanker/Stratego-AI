@@ -1,6 +1,6 @@
 class Movement
-  def initialize(game, game_data, last_move)
-    @game, @game_data, @last_move = game, game_data, last_move
+  def initialize(game, game_data)
+    @game, @game_data = game, game_data
   end
 
   def spot_area(spot)
