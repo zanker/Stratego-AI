@@ -1,7 +1,7 @@
 var Stratego = {
   status: {},
 
-  is_line_valid: function(spot_id, total, offset) {
+  is_line_valid: function(spot_id, needs_enemy, total, offset) {
     // Check the entire line, if it's blocked or another one of our pieces is in it then it's invalid.
     var total_enemies = 0, spot, i;
     for( i=1; i <= total; i++ ) {
@@ -10,8 +10,13 @@ var Stratego = {
       if( spot.find(".piece." + Stratego.status.other_player).length == 1 ) total_enemies += 1;
     }
 
-    // Anything more than an enemy in the line means it's also invalid
-    return ( total_enemies <= 1 );
+    // We're ending up on a spot that has an enemy, we must have at least one enemy
+    if( needs_enemy ) {
+      return total_enemies == 1;
+    // Otherwise we're ending up on a spot without enemies, so any enemies in the line is bad
+    } else {
+      return total_enemies == 0;
+    }
   },
 
   is_move_valid: function(from, to) {
@@ -25,15 +30,15 @@ var Stratego = {
 
     // Scouts can move any distance in a straight line.
     if( from_rank == "SC" ) {
+      var needs_enemy = to.find(".piece." + Stratego.status.other_player).length == 1;
+
       // Moving up or down
       if( from_horz == to_horz ) {
         var offset = Stratego.game_data.map.height * (from_vert > to_vert ? -1 : 1);
-        return Stratego.is_line_valid(from_spot, Math.abs(from_vert - to_vert), offset);
-
+        return Stratego.is_line_valid(from_spot, needs_enemy, Math.abs(from_vert - to_vert), offset);
       // Moving left or right
       } else if( from_vert == to_vert ) {
-        return Stratego.is_line_valid(from_spot, Math.abs(from_horz - to_horz), (from_horz > to_horz ? -1 : 1));
-
+        return Stratego.is_line_valid(from_spot, needs_enemy, Math.abs(from_horz - to_horz), (from_horz > to_horz ? -1 : 1));
       // Invalid otherwise
       } else {
         return false;
@@ -231,10 +236,10 @@ var Stratego = {
 
         // We already selected a spot, so we need to make sure it's valid to move onto
         } else if( active_spot ) {
-          if( !Stratego.is_move_valid(active_spot, spot) ) {
-            $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(active_spot.data("spot")) + " to " + Stratego.spot_to_label(spot.data("spot")) + "</span>");
-            return;
-          }
+//          if( !Stratego.is_move_valid(active_spot, spot) ) {
+//            $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(active_spot.data("spot")) + " to " + Stratego.spot_to_label(spot.data("spot")) + "</span>");
+//            return;
+//          }
 
           $("#board table td.pointer").removeClass("pointer");
           if( spot.find(".piece." + Stratego.status.other_player).length == 1 ) {
@@ -262,6 +267,15 @@ var Stratego = {
         }
 
       });
+    },
+
+    // Movement
+    moved: function(data) {
+      Stratego.status.move = data.move;
+    },
+    bad_move: function(data) {
+      Stratego.status.move = data.move;
+      $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(data.from) + " to " + Stratego.spot_to_label(data.to) + "</span>");
     }
   },
 
