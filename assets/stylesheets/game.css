@@ -19,14 +19,14 @@ html {
     padding-bottom: 5px;
     margin-bottom: 15px;
     font-weight: bold; }
-    #wrapper #message .red-player {
-      color: #a60202; }
-    #wrapper #message .blue-player {
-      color: #182fde; }
     #wrapper #message .red {
       color: red; }
     #wrapper #message .green {
       color: green; }
+  #wrapper .red-player {
+    color: #a60202; }
+  #wrapper .blue-player {
+    color: #182fde; }
   #wrapper .vert-spots ul, #wrapper .horz-spots ul {
     list-style: none;
     display: inline-block;
@@ -66,11 +66,11 @@ html {
   #wrapper .playerstatus {
     margin-bottom: 5px;
     display: none; }
-  #wrapper #player-status h3 {
+  #wrapper #red-status h3 {
     color: #a60202; }
-  #wrapper #computer-status {
+  #wrapper #blue-status {
     border-top: 1px solid black; }
-    #wrapper #computer-status h3 {
+    #wrapper #blue-status h3 {
       color: #182fde; }
   #wrapper #templates {
     text-align: center; }
@@ -81,7 +81,11 @@ html {
       overflow-y: scroll;
       overflow-x: hidden;
       max-height: 481px;
-      margin: 0 0 5px 2px; }
+      margin: 0 0 5px 2px;
+      list-style: none;
+      padding-left: 0px; }
+      #wrapper #history #logs li .red-player, #wrapper #history #logs li .blue-player, #wrapper #history #logs li .no-player {
+        font-weight: bold; }
   #wrapper #board {
     width: 670px; }
     #wrapper #board table {

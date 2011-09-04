@@ -27,14 +27,15 @@ html
     margin-bottom: 15px
     font-weight: bold
 
-    .red-player
-      color: $red_piece
-    .blue-player
-      color: $blue_piece
     .red
       color: red
     .green
       color: green
+
+  .red-player
+    color: $red_piece
+  .blue-player
+    color: $blue_piece
 
   .vert-spots, .horz-spots
     ul
@@ -85,10 +86,10 @@ html
     margin-bottom: 5px
     display: none
 
-  #player-status
+  #red-status
     h3
       color: $red_piece
-  #computer-status
+  #blue-status
     border-top: 1px solid black
 
     h3
@@ -106,6 +107,12 @@ html
       overflow-x: hidden
       max-height: 481px
       margin: 0 0 5px 2px
+      list-style: none
+      padding-left: 0px
+
+      li
+        .red-player, .blue-player, .no-player
+          font-weight: bold
 
   #board
     width: 670px

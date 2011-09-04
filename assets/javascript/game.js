@@ -1,6 +1,10 @@
 var Stratego = {
   status: {},
+  // Small helper functions
+  pad_number: function(number) { return number < 10 ? ("0" + number) : number; },
+  reverse_side: function(side) { return side == "blue" ? "red" : "blue"; },
 
+  // Movement checks
   is_line_valid: function(spot_id, needs_enemy, total, offset) {
     // Check the entire line, if it's blocked or another one of our pieces is in it then it's invalid.
     var total_enemies = 0, spot, i;
@@ -127,7 +131,8 @@ var Stratego = {
           $("<div class='piece blue' id='gamepiece" + spot_id + "'></div>").appendTo(spot);
         } else if( spot_id >= data.map.red.start && spot_id <= data.map.red.end ) {
           var rank = pieces.shift();
-          $("<div class='piece red piece-" + rank + " pointer' data-rank='" + rank + "' data-rank-id='" + Stratego.game_data.pieces[rank].id + "' id='gamepiece" + spot_id + "'><div class='name'>" + data.pieces[rank].name + "</div><div class='rank'>" + rank + "</div></div>").appendTo(spot);
+
+          $("<div class='piece red piece-" + rank + " pointer' data-rank-id='" + rank + "' id='gamepiece" + spot_id + "'><div class='name'>" + data.pieces[rank].name + "</div><div class='rank'>" + (Stratego.game_data.pieces[rank].text_rank || Stratego.game_data.pieces[rank].rank) + "</div></div>").appendTo(spot);
         }
       });
 
@@ -185,8 +190,8 @@ var Stratego = {
 
         var pieces = {};
         $(".piece." + Stratego.status.player).each(function(id, row) {
-          if( pieces[row.getAttribute("data-rank")] == null ) pieces[row.getAttribute("data-rank")] = [];
-          pieces[row.getAttribute("data-rank")].push(row);
+          if( pieces[row.getAttribute("data-rank-id")] == null ) pieces[row.getAttribute("data-rank-id")] = [];
+          pieces[row.getAttribute("data-rank-id")].push(row);
         });
 
         for( i=0, total=template.length; i < total; i++ ) {
@@ -205,7 +210,7 @@ var Stratego = {
         var setup = {};
         $(".piece." + Stratego.status.player).each(function(id, row) {
           row = $(row);
-          setup[row.closest(".spot").data("spot")] = row.data("rank");
+          setup[row.closest(".spot").data("spot")] = row.data("rank-id");
         });
 
         Stratego.respond("start_game", setup);
@@ -272,6 +277,31 @@ var Stratego = {
     // Movement
     moved: function(data) {
       Stratego.status.move = data.move;
+
+      var time = (new Date());
+      time = Stratego.pad_number(time.getHours()) + ":" + Stratego.pad_number(time.getMinutes()) + ":" + Stratego.pad_number(time.getSeconds());
+
+      var moved_to = "no-player", result = "";
+      if( data.result == "won" || data.result == "lost" ) {
+        moved_to = data.other_player + "-player";
+        result = "<span class='" + moved_to + "'>(" + data.result + ")</span>";
+
+        var target = data.result == "won" ? data.mover : Stratego.reverse_side(data.mover);
+        // Update counter since we lost a piece we already
+        var li = $("li[data-rank='" + data.lost_piece);
+        if( li.length > 1 ) {
+          li.data("lost", li.data("lost") + 1);
+          li.val(li.data("lost") + " x " + Stratego.game_data.pieces[data.lost_piece].name);
+        // New piece lost
+        } else {
+          $("<li data-rank='" + data.lost_piece + "' data-lost='1'>1 x " + Stratego.game_data.pieces[data.lost_piece].name + "</li>").appendTo("#" + target + "-status .captured");
+        }
+
+        var counter = $("#" + target + "-status .count");
+        counter.val(counter.val() + 1);
+      }
+
+      $("<li><span class='time'>[" + time + "]</span> <span class='" + data.mover + "-player'>" + Stratego.spot_to_label(data.from) + "</span> -> <span class='" + moved_to + "'>" + Stratego.spot_to_label(data.to) + "</span>" + result + "</li>").appendTo($("#logs"));
     },
     bad_move: function(data) {
       Stratego.status.move = data.move;
