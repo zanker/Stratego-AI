@@ -8,31 +8,22 @@ GAME_DATA[:classic] = {
     red: {:start => 61, :end => 100, :total => 40},
   },
   templates: {
-    cyclonedef: [2, 7, 3, 2, 6, 5, 7, 2, 8, :B, 10, 6, :B, 3, 8, 6, 3, 3, :B, 4, :S, :B, :F, :B, 3, 9, 5, 2, 4, 6, 7, 4, :B, 4, 2, 2, 5, 2, 5, 2]
+    cyclonedef: [:SC, :MAJ, :MI, :SC, :CA, :LI, :MAJ, :SC, :CO, :B, :MAR, :CA, :B, :MI, :CO, :CA, :MI, :MI, :B, :SE, :S, :B, :F, :B, :MI, :GE, :LI, :SC, :SE, :CA, :MAJ, :SE, :B, :SE, :SC, :SC, :LI, :SC, :LI, :SC]
   },
   pieces: {
-    S: {counters: [10], :counters_on => :aggression},
-    F: {counters: []},
-    B: {counters: (4..10).to_a << 2}
+    MAR: {rank: 10, avail: 1, name: "Marshal"},
+    GE: {rank: 9, :avail => 1, :name => "General"},
+    CO: {rank: 8, :avail => 2, :name => "Colonel"},
+    MAJ: {rank: 7, :avail => 3, :name => "Major"},
+    CA: {rank: 6, :avail => 4, :name => "Captain"},
+    LI: {rank: 5, :avail => 4, :name => "Lieut"},
+    SE: {rank: 4, :avail => 4, :name => "Serg"},
+    MI: {rank: 3, :avail => 5, :name => "Miner", :counters => [:B], :counters_when => :attacker},
+    SC: {rank: 2, :avail => 8, :name => "Scout"},
+    S: {rank: 1, :avail => 1, :name => "Spy", :text_rank => "S", counters: [10], :counters_when => :attacker},
+    F: {rank: 0, :avail => 1, :name => "Flag", :text_rank => "F", :unmovable => true},
+    B: {rank: 0, :avail => 6, :name => "Bomb", :text_rank => "B", counters: (4..10).to_a << 2, :counters_when => :attacked, :unnmovable => true}
   }
 }
 
-(3..10).each do |rank|
-  GAME_DATA[:classic][:pieces][rank] = {counters: (2..rank).to_a}
-end
-
-GAME_DATA[:classic][:pieces][3][:counters].push(:B)
-GAME_DATA[:classic][:pieces][2] = {counters: []}
-
-GAME_DATA[:classic][:pieces][10].merge!(:avail => 1, :name => "Marshal", :id => "MAR")
-GAME_DATA[:classic][:pieces][9].merge!(:avail => 1, :name => "General", :id => "GE")
-GAME_DATA[:classic][:pieces][8].merge!(:avail => 2, :name => "Colonel", :id => "CO")
-GAME_DATA[:classic][:pieces][7].merge!(:avail => 3, :name => "Major", :id => "MAJ")
-GAME_DATA[:classic][:pieces][6].merge!(:avail => 4, :name => "Captain", :id => "CA")
-GAME_DATA[:classic][:pieces][5].merge!(:avail => 4, :name => "Lieut", :id => "LI")
-GAME_DATA[:classic][:pieces][4].merge!(:avail => 4, :name => "Serg", :id => "SE")
-GAME_DATA[:classic][:pieces][3].merge!(:avail => 5, :name => "Miner", :id => "MI")
-GAME_DATA[:classic][:pieces][2].merge!(:avail => 8, :name => "Scout", :id => "SC")
-GAME_DATA[:classic][:pieces][:S].merge!(:avail => 1, :name => "Spy", :id => "SP")
-GAME_DATA[:classic][:pieces][:F].merge!(:avail => 1, :name => "Flag", :id => "FL", :unmovable => true)
-GAME_DATA[:classic][:pieces][:B].merge!(:avail => 6, :name => "Bomb", :id => "BO", :unmovable => true)
+GAME_DATA[:classic][:pieces].each {|k, v| v[:counters] ||= []}
