@@ -26,14 +26,13 @@ var Stratego = {
     // Scouts can move any distance in a straight line.
     if( from_rank == "SC" ) {
       // Moving up or down
-      var spot_id = from.data("spot");
       if( from_horz == to_horz ) {
         var offset = Stratego.game_data.map.height * (from_vert > to_vert ? -1 : 1);
-        return Stratego.is_line_valid(spot_id, Math.abs(from_vert - to_vert), offset);
+        return Stratego.is_line_valid(from_spot, Math.abs(from_vert - to_vert), offset);
 
       // Moving left or right
       } else if( from_vert == to_vert ) {
-        return Stratego.is_line_valid(spot_id, Math.abs(from_horz - to_horz), (from_horz > to_horz ? -1 : 1));
+        return Stratego.is_line_valid(from_spot, Math.abs(from_horz - to_horz), (from_horz > to_horz ? -1 : 1));
 
       // Invalid otherwise
       } else {
@@ -244,7 +243,11 @@ var Stratego = {
             $("#message").html("Moving from <span class='" + Stratego.status.player + "-player'>" + Stratego.spot_to_label(active_spot.data("spot")) + "</span> to " + Stratego.spot_to_label(spot.data("spot")));
           }
 
+          active_spot.find(".piece").removeClass("active");
+          Stratego.status.move = Stratego.status.other_player;
+
           Stratego.respond("move", {from: active_spot.data("spot"), to: spot.data("spot")});
+          active_spot = null;
 
         // Nothing selected yet, only can select our spots
         } else if( piece.find(Stratego.status.player) )  {
