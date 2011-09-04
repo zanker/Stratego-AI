@@ -1,3 +1,5 @@
+Dir["./modules/*.rb"].each {|r| require r}
+
 class GameSocket
   ALLOWED_METHODS = ["gamedata", "start_game", "move"]
 
@@ -44,6 +46,7 @@ class GameSocket
     end
 
     @game[:move] = :red
+    @game[:other_player] = :blue
     @game[:red] = placement
 
     # For the time being, will copy the Cyclone Defense and then iprove it once the AI is in
@@ -53,11 +56,24 @@ class GameSocket
     end
 
     respond(:start, {:move => @game[:move]})
+
+    @last_move = {}
+    @movement = Movement.new(@game, @game_data, @last_move)
+    @combat = Combat.new(@game, @game_data, @last_move)
+    @ai = ComputerAI.new(@game, @game_data, @last_move)
   end
 
   # Actual game methods
   def move(data)
+    # Make sure the move is valid of course
+    unless @movement.is_valid?(data["from"].to_i, data["to"].to_i)
+      return respond(:bad_move, {:from => data["from"], :to => data["to"], :move => @game[:move]})
+    end
 
+    @game[:move] = :blue
+    respond(:moved, {:move => @game[:move]})
+
+    @ai.play
   end
 
   def gamedata(mode)

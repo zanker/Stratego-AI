@@ -34,5 +34,5 @@ GAME_DATA[:classic][:pieces][4].merge!(:avail => 4, :name => "Serg", :id => "SE"
 GAME_DATA[:classic][:pieces][3].merge!(:avail => 5, :name => "Miner", :id => "MI")
 GAME_DATA[:classic][:pieces][2].merge!(:avail => 8, :name => "Scout", :id => "SC")
 GAME_DATA[:classic][:pieces][:S].merge!(:avail => 1, :name => "Spy", :id => "SP")
-GAME_DATA[:classic][:pieces][:F].merge!(:avail => 1, :name => "Flag", :id => "FL")
-GAME_DATA[:classic][:pieces][:B].merge!(:avail => 6, :name => "Bomb", :id => "BO")
+GAME_DATA[:classic][:pieces][:F].merge!(:avail => 1, :name => "Flag", :id => "FL", :unmovable => true)
+GAME_DATA[:classic][:pieces][:B].merge!(:avail => 6, :name => "Bomb", :id => "BO", :unmovable => true)
