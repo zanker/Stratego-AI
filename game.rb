@@ -6,7 +6,6 @@ class GameSocket
   def initialize(socket, id)
     @socket = socket
     @session_id = id
-    @game = {}
 
     socket.onmessage do |msg|
       puts "REC: #{msg}"
@@ -45,8 +44,7 @@ class GameSocket
       end
     end
 
-    @game[:move] = :red
-    @game[:other_player] = :blue
+    @game = {:move => :red, :other_player => :blue, :last_fight => {}, :history => []}
     @game[:red] = placement
 
     # For the time being, will copy the Cyclone Defense and then iprove it once the AI is in
@@ -64,15 +62,20 @@ class GameSocket
 
   # Actual game methods
   def move(data)
+    data["from"], data["to"] = data["from"].to_i, data["to"].to_i
+
     # Make sure the move is valid of course
-    unless @movement.is_valid?(data["from"].to_i, data["to"].to_i)
+    unless @movement.is_valid?(data["from"], data["to"])
       return respond(:bad_move, {:from => data["from"], :to => data["to"], :move => @game[:move]})
     end
 
-    @game[:move] = :blue
-    respond(:moved, {:move => @game[:move]})
+    # Check if we're fighting, as well as the results if we are
+    result = @combat.fight(@game[:red][data["from"]], @game[:blue][data["to"]])
 
-    @ai.play
+    @game[:move] = :blue
+    @game[:history].push(:time => Time.now.utc, :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_piece => @game[:last_fight][:piece])
+
+    respond(:moved, {:move => @game[:move], :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_piece => @game[:last_fight][:piece]})
   end
 
   def gamedata(mode)
