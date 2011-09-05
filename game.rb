@@ -75,6 +75,13 @@ class GameSocket
     @game[:history].push(:time => Time.now.utc, :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_pieces => @game[:last_fight][:pieces], :enemy_piece => @game[:last_fight][:enemy_piece])
 
     respond(:moved, {:move => @game[:move], :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_pieces => @game[:last_fight][:pieces], :enemy_piece => @game[:last_fight][:enemy_piece]})
+
+    # If the player lost the fight, send a reveal out
+    if result == :lost
+      respond(:reveal, {:id => :red, :spot => data["to"], :piece => @game[:last_fight][:enemy_piece]})
+    else
+      respond(:clear_reveal, {:id => :red})
+    end
   end
 
   def gamedata(mode)

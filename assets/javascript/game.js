@@ -1,8 +1,10 @@
 var Stratego = {
   status: {},
+  revealed: {},
+
   // Small helper functions
   pad_number: function(number) { return number < 10 ? ("0" + number) : number; },
-  reverse_side: function(side) { return side == "blue" ? "red" : "blue"; },
+  flip_side: function(side) { return side == "blue" ? "red" : "blue"; },
 
   // Movement checks
   is_line_valid: function(spot_id, needs_enemy, total, offset) {
@@ -128,7 +130,7 @@ var Stratego = {
         Stratego.spot_map[spot_id] = spot;
 
         if( spot_id >= data.map.blue.start && spot_id <= data.map.blue.end ) {
-          $("<div class='piece blue' id='gamepiece" + spot_id + "'></div>").appendTo(spot);
+          $("<div class='piece blue' id='gamepiece" + spot_id + "'><div class='name'></div><div class='rank'></div></div>").appendTo(spot);
         } else if( spot_id >= data.map.red.start && spot_id <= data.map.red.end ) {
           var rank = pieces.shift();
 
@@ -281,31 +283,71 @@ var Stratego = {
       var time = (new Date());
       time = Stratego.pad_number(time.getHours()) + ":" + Stratego.pad_number(time.getMinutes()) + ":" + Stratego.pad_number(time.getSeconds());
 
+      // Some combat happened, keep track of what
       var moved_to = "no-player", result = "";
-      if( data.result == "won" || data.result == "lost" ) {
-        moved_to = data.other_player + "-player";
-        result = "<span class='" + moved_to + "'>(" + data.result + ")</span>";
+      if( data.lost_pieces !== null ) {
+        moved_to = Stratego.flip_side(data.mover) + "-player";
+        result = " <b>(" + data.result + " vs " + Stratego.game_data.pieces[data.enemy_piece].name + ")</b>";
 
-        var target = data.result == "won" ? data.mover : Stratego.reverse_side(data.mover);
-        // Update counter since we lost a piece we already
-        var li = $("li[data-rank='" + data.lost_piece);
-        if( li.length > 1 ) {
-          li.data("lost", li.data("lost") + 1);
-          li.val(li.data("lost") + " x " + Stratego.game_data.pieces[data.lost_piece].name);
-        // New piece lost
-        } else {
-          $("<li data-rank='" + data.lost_piece + "' data-lost='1'>1 x " + Stratego.game_data.pieces[data.lost_piece].name + "</li>").appendTo("#" + target + "-status .captured");
+        // Multiple pieces can be lost in one move, in the case of a tie where both sides lose the piece
+        var key, status, li, counter, other_player;
+        for( key in data.lost_pieces ) {
+          status = data.lost_pieces[key];
+          other_player = Stratego.flip_side(status.player);
+
+          // Update counter since we lost a piece we already
+          li = $("li[data-rank='" + status.rank);
+          if( li.length > 1 ) {
+            li.data("lost", li.data("lost") + 1);
+            li.val(li.data("lost") + " x " + Stratego.game_data.pieces[status.rank].name);
+          // New piece lost
+          } else {
+            $("<li data-rank='" + status.rank + "' data-lost='1'>1 x " + Stratego.game_data.pieces[status.rank].name + "</li>").appendTo("#" + other_player + "-status .captured");
+          }
+
+          counter = $("#" + other_player + "-status .count");
+          $("#" + other_player + "-status .pieces").text(counter.text() == "0" ? "piece" : "pieces");
+          counter.text(parseInt(counter.text()) + 1);
         }
 
-        var counter = $("#" + target + "-status .count");
-        counter.val(counter.val() + 1);
+        // Update game state
+        if( data.result == "tie" ) {
+          Stratego.spot_map[data.from].find(".piece").remove();
+          Stratego.spot_map[data.to].find(".piece").remove();
+        } else if( data.result == "won" ) {
+          Stratego.spot_map[data.to].find(".piece").remove();
+          Stratego.spot_map[data.from].find(".piece").detach().appendTo(Stratego.spot_map[data.to]);
+        } else if( data.result == "lost" ) {
+          Stratego.spot_map[data.from].find(".piece").remove();
+        }
+
+      // Movement
+      } else {
+        result = " <b>(moved)</b>";
+
+        var piece = Stratego.spot_map[data.from].find(".piece").detach();
+        piece.appendTo(Stratego.spot_map[data.to]);
       }
 
       $("<li><span class='time'>[" + time + "]</span> <span class='" + data.mover + "-player'>" + Stratego.spot_to_label(data.from) + "</span> -> <span class='" + moved_to + "'>" + Stratego.spot_to_label(data.to) + "</span>" + result + "</li>").appendTo($("#logs"));
+
     },
     bad_move: function(data) {
       Stratego.status.move = data.move;
       $("#message").html("<span class='red'>You cannot move from " + Stratego.spot_to_label(data.from) + " to " + Stratego.spot_to_label(data.to) + "</span>");
+    },
+
+    // Deal with revealing a specific piece
+    reveal: function(data) {
+      Stratego.actions.clear_reveal(data);
+      Stratego.revealed[data.id] = Stratego.spot_map[data.spot];
+      Stratego.revealed[data.id].find(".name").text(Stratego.game_data.pieces[data.piece].name);
+      Stratego.revealed[data.id].find(".rank").text(Stratego.game_data.pieces[data.piece].rank);
+    },
+    clear_reveal: function(data) {
+      if( Stratego.revealed[data.id] ) {
+        Stratego.revealed[data.id].find(".name, .rank").text("");
+      }
     }
   },
 
