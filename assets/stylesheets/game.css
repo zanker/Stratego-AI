@@ -66,6 +66,9 @@ html {
   #wrapper .playerstatus {
     margin-bottom: 5px;
     display: none; }
+    #wrapper .playerstatus ul {
+      margin-top: 5px;
+      padding-left: 20px; }
   #wrapper #red-status h3 {
     color: #a60202; }
   #wrapper #blue-status {
