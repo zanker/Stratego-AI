@@ -70,12 +70,11 @@ class GameSocket
     end
 
     # Check if we're fighting, as well as the results if we are
-    result = @combat.fight(@game[:red][data["from"]], @game[:blue][data["to"]])
-
+    result = @combat.fight(:red, @game[:red][data["from"]], @game[:blue][data["to"]]) || :move
     @game[:move] = :blue
-    @game[:history].push(:time => Time.now.utc, :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_piece => @game[:last_fight][:piece])
+    @game[:history].push(:time => Time.now.utc, :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_pieces => @game[:last_fight][:pieces], :enemy_piece => @game[:last_fight][:enemy_piece])
 
-    respond(:moved, {:move => @game[:move], :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_piece => @game[:last_fight][:piece]})
+    respond(:moved, {:move => @game[:move], :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_pieces => @game[:last_fight][:pieces], :enemy_piece => @game[:last_fight][:enemy_piece]})
   end
 
   def gamedata(mode)
