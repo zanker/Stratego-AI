@@ -44,7 +44,7 @@ class GameSocket
       end
     end
 
-    @game = {:move => :red, :other_player => :blue, :last_fight => {}, :history => []}
+    @game = {:move => :red, :other_player => :blue, :history => []}
     @game[:red] = placement
 
     # For the time being, will copy the Cyclone Defense and then iprove it once the AI is in
@@ -55,32 +55,36 @@ class GameSocket
 
     respond(:start, {:move => @game[:move]})
 
-    @movement = Movement.new(@game, @game_data)
-    @combat = Combat.new(@game, @game_data)
-    @ai = ComputerAI.new(@game, @game_data)
+    @ai = Game::ComputerAI.new(@game, @game_data)
+    @movement = Game::Movement.new(@game, @game_data)
+    @combat = Game::Combat.new(@game, @game_data)
+    @client = Game::Client.new(@movement, @combat, @game, @game_data)
   end
 
   # Actual game methods
   def move(data)
-    data["from"], data["to"] = data["from"].to_i, data["to"].to_i
+    @client.move(data["from"].to_i, data["to"].to_i)
 
-    # Make sure the move is valid of course
-    unless @movement.is_valid?(data["from"], data["to"])
-      return respond(:bad_move, {:from => data["from"], :to => data["to"], :move => @game[:move]})
-    end
+    history = @game[:history].last
+    respond(:moved, history.last.merge(:move => @game[:move]))
 
-    # Check if we're fighting, as well as the results if we are
-    result = @combat.fight(:red, @game[:red][data["from"]], @game[:blue][data["to"]]) || :move
-    @game[:move] = :blue
-    @game[:history].push(:time => Time.now.utc, :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_pieces => @game[:last_fight][:pieces], :enemy_piece => @game[:last_fight][:enemy_piece])
-
-    respond(:moved, {:move => @game[:move], :from => data["from"], :to => data["to"], :mover => :red, :result => result, :lost_pieces => @game[:last_fight][:pieces], :enemy_piece => @game[:last_fight][:enemy_piece]})
-
-    # If the player lost the fight, send a reveal out
-    if result == :lost
-      respond(:reveal, {:id => :red, :spot => data["to"], :piece => @game[:last_fight][:enemy_piece]})
+    # If the player lost the fight, send a reveal, otherwise clear anything they had previously
+    if history[:result] == :lost
+      respond(:reveal, {:id => :red, :spot => history[:to], :piece => history[:enemy_piece]})
     else
       respond(:clear_reveal, {:id => :red})
+    end
+
+    # Computers turn
+    @ai.play
+
+    history = @game[:history].last
+    respond(:moved, history.last.merge(:move => @game[:move]))
+
+    if history[:reveal] || history[:result] == :won
+      respond(:reveal, {:id => :blue, :spot => history[:to], :piece => history[:defender] || history[:reveal]})
+    else
+      respond(:clear_reveal, {:id => blue})
     end
   end
 
