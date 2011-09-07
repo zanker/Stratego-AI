@@ -287,7 +287,7 @@ var Stratego = {
       var moved_to = "no-player", result = "";
       if( data.lost_pieces !== null ) {
         moved_to = Stratego.flip_side(data.mover) + "-player";
-        result = " <b>(" + data.result + " vs " + Stratego.game_data.pieces[data.enemy_piece].name + ")</b>";
+        result = " <b>(" + data.result + " vs <span class='" + moved_to + "'>" + Stratego.game_data.pieces[data.defender].name + "</span>)</b>";
 
         // Multiple pieces can be lost in one move, in the case of a tie where both sides lose the piece
         var key, status, li, counter, other_player;
